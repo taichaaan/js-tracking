@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>hoverTracking</title>
+	<style>
+		nav{
+			max-width: 1200px;
+			width: 90%;
+			margin: 300px auto;
+		}
+
+		ul{
+			/* display: -webkit-flex;
+			display: -moz-flex;
+			display: -ms-flex;
+			display: -o-flex;
+			display: flex; */
+			justify-content: center;
+			list-style-type: none;
+		}
+
+
+		a{
+			display: block;
+			padding: 10px 40px;
+			overflow: hidden;
+		}
+
+		a:hover{
+			color: #fff;
+		}
+
+		.js-tracking{
+			display: block;
+			width: 200px;
+			height: 100%;
+			top: 0;
+			border-radius: 100px;
+			background-color: red;
+			transition: 300ms;
+			transition-property: width,top,left;
+			z-index: -1;
+		}
+	</style>
+</head>
+<body>
+
+	<nav>
+		<ul>
+			<li><a href="#">cell</a></li>
+			<li><a href="#">cellcell</a></li>
+			<li><a href="#">cell</a></li>
+			<li><a href="#">cellcell</a></li>
+			<li><a href="#">cell</a></li>
+		</ul>
+	</nav>
+
+<script src="../dev/hoverTracking.js"></script>
+<script>
+	new hoverTracking('nav',{
+		hoverSelector: 'a',
+	});
+</script>
+</body>
+</html>
