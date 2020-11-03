@@ -41,6 +41,7 @@ new tracking('nav',{
 | direction | string | 'vertical' | 要素が縦並びか横並びかを指定してください。<br>horizontal or vertical |
 | targetStyle | boolean | true | targetにJavaScriptでStyleを指定する場合はtrueを指定してください。<br>falseの場合は、CSSでStyleを指定してください。 |
 | trackingStyle | boolean | true | trackingにJavaScriptでStyleを指定する場合はtrueを指定してください。<br>falseの場合は、CSSでStyleを指定してください。 |
+| resize | boolean | true | リサイズでtrackingの位置を変更する場合はtrueを指定してください。 |
 
 
 
