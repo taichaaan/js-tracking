@@ -3,8 +3,8 @@
  * @name    : tracking.js
  * @content : tracking
  * @creation: 2020.11.03
- * @update  : 2020.00.00
- * @version : 1.0.0
+ * @update  : 2020.11.03
+ * @version : 1.1.0
  *
  * @license Copyright (C) 2020 Taichi Matsutaka
  *
@@ -23,6 +23,7 @@
 			direction       : 'vertical', // horizontal or vertical
 			targetStyle     : true,
 			trackingStyle   : true,
+			resize          : true,
 		}
 
 
@@ -49,24 +50,6 @@
 			const options = this.options;
 
 
-
-			///////////////////////////////////////////////////////////////
-			// addTrackingActiveStyle
-			///////////////////////////////////////////////////////////////
-			let addTrackingActiveStyle;
-
-			if( options['direction'] === 'vertical' ){
-				addTrackingActiveStyle = function( childrenTarget , target , trackingTarget ){
-					_this.addStyleVertical( childrenTarget , target , trackingTarget );
-				}
-			} else if( options['direction'] === 'horizontal' ){
-				addTrackingActiveStyle = function( childrenTarget , target , trackingTarget ){
-					_this.addStyleHorizontal( childrenTarget , target , trackingTarget );
-				}
-			}
-
-
-
 			this.targetElements.forEach(function(target) {
 
 				///////////////////////////////////////////////////////////////
@@ -89,7 +72,7 @@
 
 				if( options['trackingStyle'] === true ){
 					trackingTarget.style.position = 'absolute';
-					trackingTarget.style.display = 'block';
+					trackingTarget.style.display  = 'block';
 				}
 
 
@@ -103,14 +86,8 @@
 
 
 				/////////////////////////////////////////////
-				// childrenTarget
+				// currentTarget
 				/////////////////////////////////////////////
-				for ( let i = 0; i < childrenTarget.length; i++ ) {
-					if(  childrenTarget[i].classList.contains( options['currentClass'] ) ){
-						currentFlg = true;
-					}
-				}
-
 				let currentTarget = target.querySelector( options['currentClass'] );
 
 				if( !currentTarget ){
@@ -118,27 +95,28 @@
 					currentTarget.classList.add( options['currentClass'] );
 				}
 
+				/* ---------- init ---------- */
+				_this.addStyle( currentTarget , target , trackingTarget );
+
 
 
 				///////////////////////////////////////////////////////////////
-				// childrenTarget
+				// event
 				///////////////////////////////////////////////////////////////
-				/* ---------- current ---------- */
-				addTrackingActiveStyle( currentTarget , target , trackingTarget );
-
 				if( options['type'] === 'hover' ){
 					/* ---------- hover ---------- */
 					for ( let i = 0; i < childrenTarget.length; i++ ) {
 						childrenTarget[i].addEventListener('mouseenter',function(){
 							trackingTarget.classList.remove('is-initial');
 							trackingTarget.classList.add('is-move');
-							addTrackingActiveStyle( this , target , trackingTarget );
+							_this.addStyle( this , target , trackingTarget );
 						});
 
 						childrenTarget[i].addEventListener('mouseleave',function(){
 							trackingTarget.classList.add('is-initial');
 							trackingTarget.classList.remove('is-move');
-							addTrackingActiveStyle( currentTarget , target , trackingTarget );
+
+							_this.currentInit( target , trackingTarget );
 						});
 					}
 				} else if( options['type'] === 'click' ){
@@ -148,33 +126,60 @@
 							if( !this.classList.contains( options['currentClass'] ) ){
 								trackingTarget.classList.remove('is-initial');
 								trackingTarget.classList.add('is-move');
-								addTrackingActiveStyle( this , target , trackingTarget );
+								_this.addStyle( this , target , trackingTarget );
 							} else{
 								trackingTarget.classList.add('is-initial');
 								trackingTarget.classList.remove('is-move');
-								addTrackingActiveStyle( currentTarget , target , trackingTarget );
+
+								_this.currentInit( target , trackingTarget );
 							}
 						});
 					}
 				}
 
+
+
+				///////////////////////////////////////////////////////////////
+				// resize
+				///////////////////////////////////////////////////////////////
+				if( options['resize'] === true ){
+					const resizeEvent = function(){
+						_this.currentInit( target , trackingTarget );
+					}
+					window.addEventListener('resize',resizeEvent);
+
+					/* ---------- removes ---------- */
+					_this.removes.push( function(){
+						window.removeEventListener('resize',resizeEvent);
+					});
+				}
+
+
+
 			});
 		},
-		addStyleVertical: function( childrenTarget , target , trackingTarget ){
-			const heigiht         = childrenTarget.clientHeight;
-			const target_top      = target.getBoundingClientRect().top;
-			const childrenTarget_top = childrenTarget.getBoundingClientRect().top;
-
-			trackingTarget.style.height = heigiht + 'px';
-			trackingTarget.style.top    = childrenTarget_top - target_top + 'px';
+		currentInit: function( target , trackingTarget ){
+			/*
+			 * currentの場所へ戻す
+			 * currentが変わっている可能性もあるため、再初期化
+			 */
+			const _this   = this;
+			const options = this.options;
+			const currentTarget = target.querySelector( '.' + options['currentClass'] );
+			_this.addStyle( currentTarget , target , trackingTarget );
 		},
-		addStyleHorizontal: function( childrenTarget , target , trackingTarget ){
-			const width            = childrenTarget.clientWidth;
-			const target_left      = target.getBoundingClientRect().left;
-			const childrenTarget_left = childrenTarget.getBoundingClientRect().left;
+		addStyle: function( currentTarget , target , trackingTarget ){
+			const width              = currentTarget.clientWidth;
+			const heigiht            = currentTarget.clientHeight;
+			const target_top         = target.getBoundingClientRect().top;
+			const target_left        = target.getBoundingClientRect().left;
+			const currentTarget_top  = currentTarget.getBoundingClientRect().top;
+			const currentTarget_left = currentTarget.getBoundingClientRect().left;
 
-			trackingTarget.style.width = width + 'px';
-			trackingTarget.style.left  = childrenTarget_left - target_left + 'px';
+			trackingTarget.style.width  = width + 'px';
+			trackingTarget.style.height = heigiht + 'px';
+			trackingTarget.style.top    = currentTarget_top - target_top + 'px';
+			trackingTarget.style.left   = currentTarget_left - target_left + 'px';
 		},
 		remove: function(){
 			/* removes に追加された関数をforで一つずつ実行する。 */
