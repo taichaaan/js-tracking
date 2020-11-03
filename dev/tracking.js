@@ -1,8 +1,8 @@
 /*!
  *
- * @name    : hoverTracking.js
- * @content : hoverTracking
- * @creation: 2020.10.28
+ * @name    : tracking.js
+ * @content : tracking
+ * @creation: 2020.11.03
  * @update  : 2020.00.00
  * @version : 1.0.0
  *
@@ -10,18 +10,19 @@
  *
  */
 (function(global) {[]
-	global.hoverTracking = function(target,options){
+	global.tracking = function(target,options){
 		///////////////////////////////////////////////////////////////
 		// defaults options
 		///////////////////////////////////////////////////////////////
 		this.targetElements = Array.prototype.slice.call( document.querySelectorAll( target ) ,0) ;
 
 		const defaults = {
-			currentClass : 'is-current',
-			hoverSelector: null,
-			type         : 'vertical', // horizontal or vertical
-			targetStyle  : true,
-			trackingStyle: true,
+			type            : 'hover', // hover or click
+			currentClass    : 'is-current',
+			childrenSelector: null,
+			direction       : 'vertical', // horizontal or vertical
+			targetStyle     : true,
+			trackingStyle   : true,
 		}
 
 
@@ -42,7 +43,7 @@
 
 
 	};
-	hoverTracking.prototype = {
+	tracking.prototype = {
 		base: function(){
 			const _this   = this;
 			const options = this.options;
@@ -54,13 +55,13 @@
 			///////////////////////////////////////////////////////////////
 			let addTrackingActiveStyle;
 
-			if( options['type'] === 'vertical' ){
-				addTrackingActiveStyle = function( hoverTarget , target , trackingTarget ){
-					_this.addStyleVertical( hoverTarget , target , trackingTarget );
+			if( options['direction'] === 'vertical' ){
+				addTrackingActiveStyle = function( childrenTarget , target , trackingTarget ){
+					_this.addStyleVertical( childrenTarget , target , trackingTarget );
 				}
-			} else if( options['type'] === 'horizontal' ){
-				addTrackingActiveStyle = function( hoverTarget , target , trackingTarget ){
-					_this.addStyleHorizontal( hoverTarget , target , trackingTarget );
+			} else if( options['direction'] === 'horizontal' ){
+				addTrackingActiveStyle = function( childrenTarget , target , trackingTarget ){
+					_this.addStyleHorizontal( childrenTarget , target , trackingTarget );
 				}
 			}
 
@@ -71,7 +72,7 @@
 				///////////////////////////////////////////////////////////////
 				// variable
 				///////////////////////////////////////////////////////////////
-				const hoverTarget = target.querySelectorAll( options['hoverSelector'] );
+				const childrenTarget = target.querySelectorAll( options['childrenSelector'] );
 
 
 
@@ -102,10 +103,10 @@
 
 
 				/////////////////////////////////////////////
-				// hoverTarget
+				// childrenTarget
 				/////////////////////////////////////////////
-				for ( let i = 0; i < hoverTarget.length; i++ ) {
-					if( !hoverTarget[i].classList.contains( options['currentClass'] ) ){
+				for ( let i = 0; i < childrenTarget.length; i++ ) {
+					if(  childrenTarget[i].classList.contains( options['currentClass'] ) ){
 						currentFlg = true;
 					}
 				}
@@ -113,55 +114,67 @@
 				let currentTarget = target.querySelector( options['currentClass'] );
 
 				if( !currentTarget ){
-					currentTarget = hoverTarget[0];
+					currentTarget = childrenTarget[0];
 					currentTarget.classList.add( options['currentClass'] );
 				}
 
 
 
 				///////////////////////////////////////////////////////////////
-				// hoverTarget
+				// childrenTarget
 				///////////////////////////////////////////////////////////////
 				/* ---------- current ---------- */
 				addTrackingActiveStyle( currentTarget , target , trackingTarget );
 
-				/* ---------- hover ---------- */
-				for ( let i = 0; i < hoverTarget.length; i++ ) {
-					hoverTarget[i].addEventListener('mouseenter',function(){
-						trackingTarget.classList.remove('is-initial');
-						trackingTarget.classList.add('is-move');
-						addTrackingActiveStyle( this , target , trackingTarget );
-					});
+				if( options['type'] === 'hover' ){
+					/* ---------- hover ---------- */
+					for ( let i = 0; i < childrenTarget.length; i++ ) {
+						childrenTarget[i].addEventListener('mouseenter',function(){
+							trackingTarget.classList.remove('is-initial');
+							trackingTarget.classList.add('is-move');
+							addTrackingActiveStyle( this , target , trackingTarget );
+						});
 
-					hoverTarget[i].addEventListener('mouseleave',function(){
-						trackingTarget.classList.add('is-initial');
-						trackingTarget.classList.remove('is-move');
-						addTrackingActiveStyle( currentTarget , target , trackingTarget );
-					});
+						childrenTarget[i].addEventListener('mouseleave',function(){
+							trackingTarget.classList.add('is-initial');
+							trackingTarget.classList.remove('is-move');
+							addTrackingActiveStyle( currentTarget , target , trackingTarget );
+						});
+					}
+				} else if( options['type'] === 'click' ){
+					/* ---------- hover ---------- */
+					for ( let i = 0; i < childrenTarget.length; i++ ) {
+						childrenTarget[i].addEventListener('click',function(){
+							if( !this.classList.contains( options['currentClass'] ) ){
+								trackingTarget.classList.remove('is-initial');
+								trackingTarget.classList.add('is-move');
+								addTrackingActiveStyle( this , target , trackingTarget );
+							} else{
+								trackingTarget.classList.add('is-initial');
+								trackingTarget.classList.remove('is-move');
+								addTrackingActiveStyle( currentTarget , target , trackingTarget );
+							}
+						});
+					}
 				}
-
-
-				/* ---------- removes ---------- */
-				_this.removes.push( function(){
-				});
 
 			});
 		},
-		addStyleVertical: function( hoverTarget , target , trackingTarget ){
-			const heigiht         = hoverTarget.clientHeight;
+		addStyleVertical: function( childrenTarget , target , trackingTarget ){
+			const heigiht         = childrenTarget.clientHeight;
 			const target_top      = target.getBoundingClientRect().top;
-			const hoverTarget_top = hoverTarget.getBoundingClientRect().top;
+			const childrenTarget_top = childrenTarget.getBoundingClientRect().top;
 
 			trackingTarget.style.height = heigiht + 'px';
-			trackingTarget.style.top    = hoverTarget_top - target_top + 'px';
+			trackingTarget.style.top    = childrenTarget_top - target_top + 'px';
 		},
-		addStyleHorizontal: function( hoverTarget , target , trackingTarget ){
-			const width            = hoverTarget.clientWidth;
+		addStyleHorizontal: function( childrenTarget , target , trackingTarget ){
+			const width            = childrenTarget.clientWidth;
 			const target_left      = target.getBoundingClientRect().left;
-			const hoverTarget_left = hoverTarget.getBoundingClientRect().left;
+			const childrenTarget_left = childrenTarget.getBoundingClientRect().left;
 
 			trackingTarget.style.width = width + 'px';
-			trackingTarget.style.left  = hoverTarget_left - target_left + 'px';
+			trackingTarget.style.left  = childrenTarget_left - target_left + 'px';
 		},
 		remove: function(){
 			/* removes に追加された関数をforで一つずつ実行する。 */

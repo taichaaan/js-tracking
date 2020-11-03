@@ -1,8 +1,8 @@
-# js-hoverTracking
+# js-tracking
 
 
 ## Description
-hoverしたら要素のところまで追跡するプラグインです。
+hoverまたはclickしたら要素のところまで追跡するプラグインです。
 
 
 ## Class
@@ -21,12 +21,13 @@ test ディレクトリをご確認ください。
 
 ## Usage
 ```
-new hoverTracking('nav',{
-	currentClass : 'is-current',
-	hoverSelector: a,
-	type         : 'vertical',
-	targetStyle  : true,
-	trackingStyle: true,
+new tracking('nav',{
+	type            : 'hover', // hover or click
+	currentClass    : 'is-current',
+	childrenSelector: null,
+	direction       : 'vertical', // horizontal or vertical
+	targetStyle     : true,
+	trackingStyle   : true,
 });
 ```
 
@@ -34,9 +35,10 @@ new hoverTracking('nav',{
 ## Option
 | option | Type | Default | description |
 | ---- | ---- | ---- | ---- |
+| type | string | 'hover' | ・hover<br>・click |
 | currentClass | string | 'is-current' | currentのhoverSelectorに付与されるクラスを指定してください。<br>hoverしていないときの初期要素に付与されます。 |
-| hoverSelector | string | null | hoverする要素のセレクタを指定してください。<br>必ずtargetの子孫要素です。 |
-| type | string | 'vertical' | 要素が縦並びか横並びかを指定してください。<br>horizontal or vertical |
+| childrenSelector | string | null | hoverやclickする要素のセレクタを指定してください。<br>必ずtargetの子孫要素です。 |
+| direction | string | 'vertical' | 要素が縦並びか横並びかを指定してください。<br>horizontal or vertical |
 | targetStyle | boolean | true | targetにJavaScriptでStyleを指定する場合はtrueを指定してください。<br>falseの場合は、CSSでStyleを指定してください。 |
 | trackingStyle | boolean | true | trackingにJavaScriptでStyleを指定する場合はtrueを指定してください。<br>falseの場合は、CSSでStyleを指定してください。 |
 
