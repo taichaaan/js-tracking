@@ -3,8 +3,8 @@
  * @name    : tracking.js
  * @content : tracking
  * @creation: 2020.11.03
- * @update  : 2020.11.03
- * @version : 1.1.0
+ * @update  : 2020.11.20
+ * @version : 1.1.1
  *
  * @license Copyright (C) 2020 Taichi Matsutaka
  *
@@ -88,7 +88,7 @@
 				/////////////////////////////////////////////
 				// currentTarget
 				/////////////////////////////////////////////
-				let currentTarget = target.querySelector( options['currentClass'] );
+				let currentTarget = target.querySelector( '.' + options['currentClass'] );
 
 				if( !currentTarget ){
 					currentTarget = childrenTarget[0];
