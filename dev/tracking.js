@@ -1,12 +1,11 @@
-/*!
+/*! tracking.js | v1.1.2 | license Copyright (C) 2020 - 2021 Taichi Matsutaka */
+/*
  *
  * @name    : tracking.js
  * @content : tracking
  * @creation: 2020.11.03
- * @update  : 2020.11.20
- * @version : 1.1.1
- *
- * @license Copyright (C) 2020 Taichi Matsutaka
+ * @update  : 2021.01.11
+ * @version : 1.1.2
  *
  */
 (function(global) {[]
