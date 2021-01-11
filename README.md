@@ -36,6 +36,7 @@ new tracking('nav',{
 | option | Type | Default | description |
 | ---- | ---- | ---- | ---- |
 | type | string | 'hover' | ・hover<br>・click |
+| addClass | array | null | trackingに付与するクラスを配列で指定してください。 |
 | currentClass | string | 'is-current' | currentのhoverSelectorに付与されるクラスを指定してください。<br>hoverしていないときの初期要素に付与されます。 |
 | childrenSelector | string | null | hoverやclickする要素のセレクタを指定してください。<br>必ずtargetの子孫要素です。 |
 | direction | string | 'vertical' | 要素が縦並びか横並びかを指定してください。<br>horizontal or vertical |

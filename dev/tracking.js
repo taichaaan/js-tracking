@@ -1,11 +1,11 @@
-/*! tracking.js | v1.1.2 | license Copyright (C) 2020 - 2021 Taichi Matsutaka */
+/*! tracking.js | v1.2.0 | license Copyright (C) 2020 - 2021 Taichi Matsutaka */
 /*
  *
  * @name    : tracking.js
  * @content : tracking
  * @creation: 2020.11.03
  * @update  : 2021.01.11
- * @version : 1.1.2
+ * @version : 1.2.0
  *
  */
 (function(global) {[]
@@ -17,6 +17,7 @@
 
 		const defaults = {
 			type            : 'hover', // hover or click
+			addClass        : null,
 			currentClass    : 'is-current',
 			childrenSelector: null,
 			direction       : 'vertical', // horizontal or vertical
@@ -80,6 +81,16 @@
 				/////////////////////////////////////////////
 				if( options['targetStyle'] === true ){
 					target.style.position = 'relative';
+				}
+
+
+				/////////////////////////////////////////////
+				// addClass
+				/////////////////////////////////////////////
+				if( options['addClass'] != null ){
+					for ( let i = 0; i < options['addClass'].length; i++ ) {
+						trackingTarget.classList.add( options['addClass'][i] );
+					}
 				}
 
 
