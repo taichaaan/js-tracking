@@ -44,7 +44,7 @@ new tracking('.js-tracking',{
 | ---- | ---- | ---- | ---- |
 | type | string | 'hover' | ・hover<br>・click |
 | hoverSelector | string | null | hoverやclickする要素のセレクタを指定してください。<br>必ずtargetの子孫要素です。 |
-| objective | string | null | stalkerの目的となる要素を指定してください。<br>必ずtargetの子孫要素です。 |
+| objectiveSelector | string | null | stalkerの目的となる要素を指定してください。<br>必ずtargetの子孫要素です。 |
 | direction | string | 'vertical' | 要素が縦並びか横並びかを指定してください。<br>horizontal or vertical |
 | currentClass | string | 'is-current' | currentのhoverSelectorに付与されるクラスを指定してください。<br>hoverしていないときの初期要素に付与されます。 |
 | mouseleaveCurrentPosition | boolean | false | マウスが外れた時、currentの位置に戻るか否かを指定してください。 |
