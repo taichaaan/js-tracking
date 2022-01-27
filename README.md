@@ -2,13 +2,16 @@
 
 
 ## Description
-hoverまたはclickしたら要素のところまで追跡するプラグインです。
+hoverまたはclickしたら要素のところまで追跡するプラグインです。  
+  
+全体を囲む要素を「tracking」  
+実際に追跡する要素を「stalker」とします。
 
 
 ## Class
 ### hoge
 - is-move -- 動いているときにtrackingTargetに付与されるクラスです。
-- is-initial -- is-moveではないときにtrackingTargetに付与されるクラスです。
+- is-initial -- 初期値の場所にいる時、trackingTargetに付与されるクラスです。
 
 
 
@@ -20,14 +23,18 @@ test ディレクトリをご確認ください。
 
 
 ## Usage
-```
-new tracking('nav',{
-	type            : 'hover', // hover or click
-	currentClass    : 'is-current',
-	childrenSelector: null,
-	direction       : 'vertical', // horizontal or vertical
-	targetStyle     : true,
-	trackingStyle   : true,
+```JavaScript
+new tracking('.js-tracking',{
+	type                 : 'hover', // hover or click
+	hoverSelector        : 'a:not(.js-tracking__not)',
+	objectiveSelector    : null,
+	direction            : 'vertical', // horizontal or vertical
+	currentClass         : 'is-current',
+	mouseleaveCurrentPosition: false,
+	trackingStyle        : true,
+	stalkerStyle         : true,
+	stalkerClass         : ['js-tracking__stalker'],
+	resize               : true,
 });
 ```
 
@@ -36,21 +43,21 @@ new tracking('nav',{
 | option | Type | Default | description |
 | ---- | ---- | ---- | ---- |
 | type | string | 'hover' | ・hover<br>・click |
-| addClass | array | null | trackingに付与するクラスを配列で指定してください。 |
-| currentClass | string | 'is-current' | currentのhoverSelectorに付与されるクラスを指定してください。<br>hoverしていないときの初期要素に付与されます。 |
-| childrenSelector | string | null | hoverやclickする要素のセレクタを指定してください。<br>必ずtargetの子孫要素です。 |
+| hoverSelector | string | null | hoverやclickする要素のセレクタを指定してください。<br>必ずtargetの子孫要素です。 |
+| objective | string | null | stalkerの目的となる要素を指定してください。<br>必ずtargetの子孫要素です。 |
 | direction | string | 'vertical' | 要素が縦並びか横並びかを指定してください。<br>horizontal or vertical |
-| targetStyle | boolean | true | targetにJavaScriptでStyleを指定する場合はtrueを指定してください。<br>falseの場合は、CSSでStyleを指定してください。 |
+| currentClass | string | 'is-current' | currentのhoverSelectorに付与されるクラスを指定してください。<br>hoverしていないときの初期要素に付与されます。 |
+| mouseleaveCurrentPosition | boolean | false | マウスが外れた時、currentの位置に戻るか否かを指定してください。 |
 | trackingStyle | boolean | true | trackingにJavaScriptでStyleを指定する場合はtrueを指定してください。<br>falseの場合は、CSSでStyleを指定してください。 |
-| resize | boolean | true | リサイズでtrackingの位置を変更する場合はtrueを指定してください。 |
+| stalkerStyle | boolean | true | stalkerにJavaScriptでStyleを指定する場合はtrueを指定してください。<br>falseの場合は、CSSでStyleを指定してください。 |
+| stalkerClass | array | null | stalkerに付与するクラスを配列で指定してください。 |
+| resize | boolean | true | リサイズでstalkerの位置を変更する場合はtrueを指定してください。 |
 
 
 
 ## Method
 | name  | description |
 | ---- | ---- |
-| addStyleVertical | typeがverticlaの時、trackingにactiveStyleを与える関数です。 |
-| addStyleHorizontal | typeがhorizontalの時、trackingにactiveStyleを与える関数です。 |
 | remove | 全てのイベントを削除する関数です。 |
 
 
