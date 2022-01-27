@@ -1,11 +1,12 @@
-/*! tracking.js | v2.0.0 | license Copyright (C) 2020 - 2022 Taichi Matsutaka */
+/*! tracking.js | v2.0.1 | license Copyright (C) 2020 - 2022 Taichi Matsutaka */
 /*
  *
  * @name    : tracking.js
  * @content : tracking
+ * @url     : https://github.com/taichaaan/js-tracking
  * @creation: 2020.11.03
  * @update  : 2022.01.27
- * @version : 2.0.0
+ * @version : 2.0.1
  *
  */
 (function(global) {[]
@@ -50,8 +51,6 @@
 		base: function(){
 			const _this   = this;
 			const options = this.options;
-
-			console.log( options );
 
 
 
@@ -208,14 +207,14 @@
 				// resize
 				///////////////////////////////////////////////////////////////
 				if( options['resize'] === true ){
-					const resizeEvent = function(){
-						currentInit( target , stalker );
+					const onResize = function(){
+						removeStalker( currentTarget , objectiveTarget , target , stalker );
 					}
-					window.addEventListener('resize',resizeEvent);
+					window.addEventListener('resize',onResize);
 
 					/* ---------- removes ---------- */
 					_this.removes.push( function(){
-						window.removeEventListener('resize',resizeEvent);
+						window.removeEventListener('resize',onResize);
 					});
 				}
 
