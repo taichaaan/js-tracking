@@ -1,11 +1,11 @@
-/*! tracking.js | v1.2.0 | license Copyright (C) 2020 - 2021 Taichi Matsutaka */
+/*! tracking.js | v2.0.0 | license Copyright (C) 2020 - 2022 Taichi Matsutaka */
 /*
  *
  * @name    : tracking.js
  * @content : tracking
  * @creation: 2020.11.03
- * @update  : 2021.01.11
- * @version : 1.2.0
+ * @update  : 2022.01.27
+ * @version : 2.0.0
  *
  */
 (function(global) {[]
@@ -16,14 +16,16 @@
 		this.targetElements = Array.prototype.slice.call( document.querySelectorAll( target ) ,0) ;
 
 		const defaults = {
-			type            : 'hover', // hover or click
-			addClass        : null,
-			currentClass    : 'is-current',
-			childrenSelector: null,
-			direction       : 'vertical', // horizontal or vertical
-			targetStyle     : true,
-			trackingStyle   : true,
-			resize          : true,
+			type                 : 'hover', // hover or click
+			hoverSelector        : null,
+			objectiveSelector    : null,
+			direction            : 'vertical', // horizontal or vertical
+			currentClass         : 'is-current',
+			mouseleaveCurrentPosition: false,
+			trackingStyle        : true,
+			stalkerStyle         : true,
+			stalkerClass         : ['js-tracking__stalker'],
+			resize               : true,
 		}
 
 
@@ -49,13 +51,55 @@
 			const _this   = this;
 			const options = this.options;
 
+			console.log( options );
+
+
+
+			///////////////////////////////////////////////////////////////
+			// addStalker
+			///////////////////////////////////////////////////////////////
+			const addStalker = function( objectiveTarget , target , stalker ){
+				const width                = objectiveTarget.clientWidth;
+				const heigiht              = objectiveTarget.clientHeight;
+				const target_top           = target.getBoundingClientRect().top;
+				const target_left          = target.getBoundingClientRect().left;
+				const objectiveTarget_top  = objectiveTarget.getBoundingClientRect().top;
+				const objectiveTarget_left = objectiveTarget.getBoundingClientRect().left;
+
+				stalker.style.width  = width + 'px';
+				stalker.style.height = heigiht + 'px';
+				stalker.style.top    = objectiveTarget_top - target_top + 'px';
+				stalker.style.left   = objectiveTarget_left - target_left + 'px';
+			};
+
+
+			///////////////////////////////////////////////////////////////
+			// removeStalker
+			///////////////////////////////////////////////////////////////
+			let removeStalker =  null;
+
+			if( options['mouseleaveCurrentPosition'] == true ){
+				removeStalker = function( currentTarget , objectiveTarget , target , stalker ){
+					stalker.classList.add('is-initial');
+					stalker.classList.remove('is-move');
+					addStalker( currentTarget , target , stalker );
+				}
+			} else{
+				removeStalker = function( currentTarget , objectiveTarget , target , stalker ){
+					stalker.classList.remove('is-move');
+				}
+			}
+
+
+
+
 
 			this.targetElements.forEach(function(target) {
 
 				///////////////////////////////////////////////////////////////
 				// variable
 				///////////////////////////////////////////////////////////////
-				const childrenTarget = target.querySelectorAll( options['childrenSelector'] );
+				const hoverTargets = target.querySelectorAll( options['hoverSelector'] );
 
 
 
@@ -63,50 +107,51 @@
 				// settings
 				///////////////////////////////////////////////////////////////
 				/////////////////////////////////////////////
-				// trackingTarget
+				// stalker
 				/////////////////////////////////////////////
-				const trackingTarget = document.createElement('span');
-				trackingTarget.classList.add('js-tracking');
-				trackingTarget.classList.add('is-initial');
-				target.appendChild(trackingTarget);
+				const stalker = document.createElement('span');
 
-				if( options['trackingStyle'] === true ){
-					trackingTarget.style.position = 'absolute';
-					trackingTarget.style.display  = 'block';
+				for (var i = 0; i < options['stalkerClass'].length; i++) {
+					stalker.classList.add( options['stalkerClass'][i] );
+				}
+				stalker.classList.add('is-initial');
+
+				target.appendChild(stalker);
+
+				if( options['stalkerStyle'] === true ){
+					stalker.style.position = 'absolute';
+					stalker.style.display  = 'block';
 				}
 
 
 				/////////////////////////////////////////////
 				// target
 				/////////////////////////////////////////////
-				if( options['targetStyle'] === true ){
+				if( options['trackingStyle'] === true ){
 					target.style.position = 'relative';
 				}
 
 
+
 				/////////////////////////////////////////////
-				// addClass
+				// objectiveTarget
 				/////////////////////////////////////////////
-				if( options['addClass'] != null ){
-					for ( let i = 0; i < options['addClass'].length; i++ ) {
-						trackingTarget.classList.add( options['addClass'][i] );
+				let currentTarget   = target.querySelectorAll( '.' + options['currentClass'] )[0];
+				let objectiveTarget = '';
+
+				if( options['mouseleaveCurrentPosition'] == true ){
+					objectiveTarget = currentTarget;
+				} else{
+					if( options['objectiveSelector'] == null ){
+						objectiveTarget = hoverTargets[0];
+					} else{
+						objectiveTarget = target.querySelectorAll( options['objectiveSelector'] )[0];
 					}
 				}
 
-
-
-				/////////////////////////////////////////////
-				// currentTarget
-				/////////////////////////////////////////////
-				let currentTarget = target.querySelector( '.' + options['currentClass'] );
-
-				if( !currentTarget ){
-					currentTarget = childrenTarget[0];
-					currentTarget.classList.add( options['currentClass'] );
-				}
-
 				/* ---------- init ---------- */
-				_this.addStyle( currentTarget , target , trackingTarget );
+				addStalker( objectiveTarget , target , stalker );
+
 
 
 
@@ -115,33 +160,43 @@
 				///////////////////////////////////////////////////////////////
 				if( options['type'] === 'hover' ){
 					/* ---------- hover ---------- */
-					for ( let i = 0; i < childrenTarget.length; i++ ) {
-						childrenTarget[i].addEventListener('mouseenter',function(){
-							trackingTarget.classList.remove('is-initial');
-							trackingTarget.classList.add('is-move');
-							_this.addStyle( this , target , trackingTarget );
+					for ( let i = 0; i < hoverTargets.length; i++ ) {
+						hoverTargets[i].addEventListener('mouseenter',function(){
+							let _this       = this;
+							objectiveTarget = this.querySelector( options['objectiveSelector'] );
+
+							stalker.classList.remove('is-initial');
+							stalker.classList.add('is-move');
+
+							if( !objectiveTarget ){
+								objectiveTarget = _this;
+							}
+
+							addStalker( objectiveTarget , target , stalker );
 						});
 
-						childrenTarget[i].addEventListener('mouseleave',function(){
-							trackingTarget.classList.add('is-initial');
-							trackingTarget.classList.remove('is-move');
-
-							_this.currentInit( target , trackingTarget );
+						hoverTargets[i].addEventListener('mouseleave',function(){
+							removeStalker( currentTarget , objectiveTarget , target , stalker );
 						});
 					}
 				} else if( options['type'] === 'click' ){
 					/* ---------- hover ---------- */
-					for ( let i = 0; i < childrenTarget.length; i++ ) {
-						childrenTarget[i].addEventListener('click',function(){
+					for ( let i = 0; i < hoverTargets.length; i++ ) {
+						hoverTargets[i].addEventListener('click',function(){
 							if( !this.classList.contains( options['currentClass'] ) ){
-								trackingTarget.classList.remove('is-initial');
-								trackingTarget.classList.add('is-move');
-								_this.addStyle( this , target , trackingTarget );
-							} else{
-								trackingTarget.classList.add('is-initial');
-								trackingTarget.classList.remove('is-move');
+								let _this       = this;
+								objectiveTarget = this.querySelector( options['objectiveSelector'] );
 
-								_this.currentInit( target , trackingTarget );
+								stalker.classList.remove('is-initial');
+								stalker.classList.add('is-move');
+
+								if( !objectiveTarget ){
+									objectiveTarget = _this;
+								}
+
+								addStalker( objectiveTarget , target , stalker );
+							} else{
+								removeStalker( currentTarget , objectiveTarget , target , stalker );
 							}
 						});
 					}
@@ -154,7 +209,7 @@
 				///////////////////////////////////////////////////////////////
 				if( options['resize'] === true ){
 					const resizeEvent = function(){
-						_this.currentInit( target , trackingTarget );
+						currentInit( target , stalker );
 					}
 					window.addEventListener('resize',resizeEvent);
 
@@ -167,29 +222,6 @@
 
 
 			});
-		},
-		currentInit: function( target , trackingTarget ){
-			/*
-			 * currentの場所へ戻す
-			 * currentが変わっている可能性もあるため、再初期化
-			 */
-			const _this   = this;
-			const options = this.options;
-			const currentTarget = target.querySelector( '.' + options['currentClass'] );
-			_this.addStyle( currentTarget , target , trackingTarget );
-		},
-		addStyle: function( currentTarget , target , trackingTarget ){
-			const width              = currentTarget.clientWidth;
-			const heigiht            = currentTarget.clientHeight;
-			const target_top         = target.getBoundingClientRect().top;
-			const target_left        = target.getBoundingClientRect().left;
-			const currentTarget_top  = currentTarget.getBoundingClientRect().top;
-			const currentTarget_left = currentTarget.getBoundingClientRect().left;
-
-			trackingTarget.style.width  = width + 'px';
-			trackingTarget.style.height = heigiht + 'px';
-			trackingTarget.style.top    = currentTarget_top - target_top + 'px';
-			trackingTarget.style.left   = currentTarget_left - target_left + 'px';
 		},
 		remove: function(){
 			/* removes に追加された関数をforで一つずつ実行する。 */
