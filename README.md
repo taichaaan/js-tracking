@@ -9,7 +9,6 @@ hoverまたはclickしたら要素のところまで追跡するプラグイン�
 
 
 ## Class
-### hoge
 - is-move -- 動いているときにtrackingTargetに付与されるクラスです。
 - is-initial -- 初期値の場所にいる時、trackingTargetに付与されるクラスです。
 
