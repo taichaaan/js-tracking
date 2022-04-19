@@ -25,13 +25,14 @@
 			display: block;
 			padding: 10px 40px;
 			overflow: hidden;
+			color: black;
 		}
 
-		a:hover{
+/* 		a:hover{
 			color: #fff;
 		}
-
-		.js-tracking{
+ */
+		.js-tracking__stalker{
 			display: block;
 			width: 200px;
 			height: 100%;
@@ -59,7 +60,16 @@
 <script src="../dev/tracking.js"></script>
 <script>
 	new tracking('nav',{
-		childrenSelector: 'a',
+		type                     : 'hover', // hover or click
+		hoverSelector            : 'a',
+		objectiveSelector        : null,
+		direction                : 'vertical', // horizontal or vertical
+		currentClass             : 'is-current',
+		mouseleaveCurrentPosition: false,
+		trackingStyle            : true,
+		stalkerStyle             : true,
+		stalkerClass             : ['js-tracking__stalker'],
+		resize                   : true,
 	});
 </script>
 </body>
